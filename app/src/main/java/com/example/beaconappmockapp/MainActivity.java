@@ -1,9 +1,13 @@
 package com.example.beaconappmockapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Animatable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
     Animation topAnim, bottomAnim;
     ImageView logo;
     TextView brandName, slogan;
-
+    boolean locationPermissionGranted;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         brandName.setAnimation(bottomAnim);
         slogan.setAnimation(bottomAnim);
 
+        getLocationPermission();
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -63,5 +69,38 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }, SPLASH_SCREEN);
+    }
+
+    private void getLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            locationPermissionGranted = true;
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        locationPermissionGranted = false;
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    locationPermissionGranted = true;
+                }
+            }
+        }
     }
 }
