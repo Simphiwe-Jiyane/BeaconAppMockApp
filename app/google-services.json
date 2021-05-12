@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "273908154271",
+    "project_id": "beaconappmockapp",
+    "storage_bucket": "beaconappmockapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:273908154271:android:3b659e1b7a8c281e2247aa",
+        "android_client_info": {
+          "package_name": "com.example.beaconappmockapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "273908154271-8affjc91joer8km8lo3sa37aq01lr3j5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzdd0ocLEOSEQQHtjImirwlmJY_zlpwBk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "273908154271-8affjc91joer8km8lo3sa37aq01lr3j5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

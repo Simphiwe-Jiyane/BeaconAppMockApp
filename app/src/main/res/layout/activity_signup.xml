@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".signup"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:transitionName="logo_transition1"
+        android:src="@drawable/ic_beacon_icon_2"/>
+
+
+    <TextView
+        android:id="@+id/tvWelcomeMessage1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Welcome to Beacon"
+        android:transitionName="slogan_transition"
+        android:textSize="35sp"
+        android:textColor="@color/app_primary"
+        android:layout_marginLeft="20sp"
+        />
+    <TextView
+        android:id="@+id/tvWelcomeSlogan1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:transitionName="tagline_transition1"
+        android:text="Please enter your details to sign up"
+        android:textSize="18sp"
+        android:textColor="@color/app_secondary"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="35sp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/firstname"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxStrokeColor="@color/app_primary"
+            android:hint="Firstname1"
+            app:hintTextColor="@color/app_primary"
+            app:placeholderTextColor="@color/app_primary"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/surname1"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxStrokeColor="@color/app_primary"
+            android:hint="Surname"
+            app:hintTextColor="@color/app_primary"
+            android:layout_marginTop="20sp"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/email1"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxStrokeColor="@color/app_primary"
+            android:hint="email"
+            app:hintTextColor="@color/app_primary"
+            android:layout_marginTop="20sp"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/password1"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxStrokeColor="@color/app_primary"
+            android:hint="Create Password"
+            app:hintTextColor="@color/app_primary"
+            android:layout_marginTop="20sp"
+            app:passwordToggleEnabled="true"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/passwordConfirm1"
+            android:layout_marginTop="20sp"
+            android:hint="Confirm Password"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxStrokeColor="@color/app_primary"
+            app:hintTextColor="@color/app_primary"
+            app:passwordToggleEnabled="true"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/btnSignUp1"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/app_primary"
+            android:backgroundTint="@color/app_primary"
+            app:backgroundTint="@color/app_primary"
+            android:text="Sign Up"
+            />
+    </LinearLayout>
+
+
+
+</LinearLayout>
