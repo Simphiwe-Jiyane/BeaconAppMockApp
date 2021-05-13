@@ -14,10 +14,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.beaconappmockapp.GooglePlacesHelpers.Places.GooglePlaceHelper;
+import com.example.beaconappmockapp.NetworkHelpers.PlacesHelper;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -46,7 +48,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private CameraPosition cameraPosition;
 
-    // The entry point to the Places API.
+    // The entry point to the com.example.beaconappmockapp.GooglePlacesHelpers.Places API.
     private PlacesClient placesClient;
 
     // The entry point to the Fused Location Provider.
@@ -75,6 +77,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String[] likelyPlaceAddresses;
     private List[] likelyPlaceAttributions;
     private LatLng[] likelyPlaceLatLngs;
+
+    //Navigation bar buttons
+    ImageView btnDirections;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +113,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
         // [END maps_current_place_map_fragment]
         // [END_EXCLUDE]
+
+        //Init navigation bar buttons
+
+        btnDirections = findViewById(R.id.imgLocationIcon);
+
+        //TODO: Set up this button properly
+        btnDirections.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                PlacesHelper helper = new PlacesHelper();
+                List<GooglePlaceHelper> list = helper.getPlace();
+
+                for (GooglePlaceHelper place: list) {
+                    System.out.println("Location name is ==> "+place.getName());
+                    System.out.println("Address is ==> "+place.getAddress());
+                    System.out.println("Location latitude is ==> " + place.getGeometry().getLocation().getLatitude());
+                    System.out.println("Location longitude is ==> " + place.getGeometry().getLocation().getLatitude());
+                    System.out.println("viewport latitude is ==> " + place.getGeometry().getViewport().getNortheast().getLatitude());
+                    System.out.println("viewport longitude is ==> " + place.getGeometry().getViewport().getNortheast().getLongitude());
+                }
+            }
+        });
     }
 
 
