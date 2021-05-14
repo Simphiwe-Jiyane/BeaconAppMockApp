@@ -50,7 +50,6 @@ public class LoginFrag extends Fragment {
 
         btnLogin = view.findViewById(R.id.btnLogin);
 
-        //TODO: Check if user is already signed in
         //Set button on click listener
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override

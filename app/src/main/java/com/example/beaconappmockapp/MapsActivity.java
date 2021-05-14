@@ -11,14 +11,18 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.beaconappmockapp.GooglePlacesHelpers.Places.GooglePlaceHelper;
+import com.example.beaconappmockapp.GooglePlacesHelpers.Places.PlacesLocation;
 import com.example.beaconappmockapp.NetworkHelpers.PlacesHelper;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -41,6 +45,7 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -78,6 +83,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List[] likelyPlaceAttributions;
     private LatLng[] likelyPlaceLatLngs;
 
+    //Search bar edit text
+    EditText etxtSearch;
+
     //Navigation bar buttons
     ImageView btnDirections;
 
@@ -114,26 +122,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // [END maps_current_place_map_fragment]
         // [END_EXCLUDE]
 
-        //Init navigation bar buttons
+        //Init search bar
+        etxtSearch = findViewById(R.id.etxtSearch);
 
+        etxtSearch.setOnEditorActionListener(editorListener);
+
+        //Init navigation bar buttons
         btnDirections = findViewById(R.id.imgLocationIcon);
+
+
 
         //TODO: Set up this button properly
         btnDirections.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                PlacesHelper helper = new PlacesHelper();
-                List<GooglePlaceHelper> list = helper.getPlace();
 
-                for (GooglePlaceHelper place: list) {
-                    System.out.println("Location name is ==> "+place.getName());
-                    System.out.println("Address is ==> "+place.getAddress());
-                    System.out.println("Location latitude is ==> " + place.getGeometry().getLocation().getLatitude());
-                    System.out.println("Location longitude is ==> " + place.getGeometry().getLocation().getLatitude());
-                    System.out.println("viewport latitude is ==> " + place.getGeometry().getViewport().getNortheast().getLatitude());
-                    System.out.println("viewport longitude is ==> " + place.getGeometry().getViewport().getNortheast().getLongitude());
-                }
             }
         });
     }
@@ -204,6 +208,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
+
     }
 
     private void getDeviceLocation() {
@@ -400,5 +405,54 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (SecurityException e)  {
             Log.e("Exception: %s", e.getMessage());
         }
+    }
+
+    //Helper methods
+
+    private void updateMap(GooglePlaceHelper helper){
+
+        LatLng location = new LatLng(helper.getGeometry().getLocation().getLatitude(),helper.getGeometry().getLocation().getLongitude());
+
+        mMap.addMarker(new MarkerOptions()
+                .position(location)
+                .title(helper.getName())
+                .draggable(true));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, DEFAULT_ZOOM));
+
+    }
+
+
+    //On editor action listener method
+     private TextView.OnEditorActionListener editorListener = new TextView.OnEditorActionListener() {
+        @Override
+        public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+            switch (i){
+                case EditorInfo.IME_ACTION_GO:
+                    geoLocate();
+            }
+            return false;
+        }
+    };
+
+    //Method to retrieve searched location
+    private void geoLocate() {
+        String searchText = etxtSearch.getText().toString();
+
+        //TODO: Handle multiple possible locations before updating the map
+        //TODO: Create exception handling here
+        PlacesHelper helper = new PlacesHelper();
+        List<GooglePlaceHelper> list = helper.getPlace(searchText);
+
+        for (GooglePlaceHelper place : list) {
+//            System.out.println("Location name is ==> " + place.getName());
+//            System.out.println("Address is ==> " + place.getAddress());
+//            System.out.println("Location latitude is ==> " + place.getGeometry().getLocation().getLatitude());
+//            System.out.println("Location longitude is ==> " + place.getGeometry().getLocation().getLatitude());
+//            System.out.println("viewport latitude is ==> " + place.getGeometry().getViewport().getNortheast().getLatitude());
+//            System.out.println("viewport longitude is ==> " + place.getGeometry().getViewport().getNortheast().getLongitude());
+
+            updateMap(place);
+        }
+
     }
 }

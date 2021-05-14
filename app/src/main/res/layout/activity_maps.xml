@@ -1,9 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/white_border"
+        android:elevation="1dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        >
+
+        <EditText
+            android:id="@+id/etxtSearch"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:hint="Enter a name, address or zip code"
+            android:imeOptions="actionGo"
+            android:inputType="text"
+            android:textColor="@color/white"
+            android:textColorHighlight="@color/app_primary"
+            android:textColorLink="@color/app_primary"
+            android:backgroundTint="@color/app_primary"
+            />
+    </RelativeLayout>
 
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -12,23 +37,18 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="650dp"
+        android:layout_height="match_parent"
         tools:context=".MapsActivity" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:background="@color/quantum_grey"
+        android:layout_alignParentBottom="true"
         >
-<!--TODO: Create search bar and other nav items-->
+<!--TODO: other nav items-->
 
-<!--        <EditText-->
-<!--            android:layout_width="300dp"-->
-<!--            android:layout_height="50dp"-->
-<!--            android:layout_centerInParent="true"-->
-<!--            -->
-<!--            />-->
-<!--TODO: Create relative layout and use elevation to navigation items on the search bear-->
+<!--TODO: Add relative layout for selecting possible candidates -->
 <!--TODO: Change the functionality of the enter button on users keyboard-->
         <ImageView
             android:id="@+id/imgLocationIcon"
@@ -40,4 +60,4 @@
             />
 
     </RelativeLayout>
-</LinearLayout>
+</RelativeLayout>
