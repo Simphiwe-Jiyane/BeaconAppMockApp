@@ -7,6 +7,9 @@ public class DirectionsHelper {
     private String url = "https://maps.googleapis.com/maps/api/directions/json?origin=Disneyland&destination=Universal+Studios+Hollywood&key=AIzaSyBSXbvQ6E_PPDHtjtiIke1fOwM0PpkUekI";
     String response;
 
+
+    //Construct url
+
     //send an http request for json directions data and get a response
     public void getResponse(){
         NetworkUtil helper = new NetworkUtil(url);

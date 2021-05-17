@@ -444,12 +444,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         List<GooglePlaceHelper> list = helper.getPlace(searchText);
 
         for (GooglePlaceHelper place : list) {
-//            System.out.println("Location name is ==> " + place.getName());
-//            System.out.println("Address is ==> " + place.getAddress());
-//            System.out.println("Location latitude is ==> " + place.getGeometry().getLocation().getLatitude());
-//            System.out.println("Location longitude is ==> " + place.getGeometry().getLocation().getLatitude());
-//            System.out.println("viewport latitude is ==> " + place.getGeometry().getViewport().getNortheast().getLatitude());
-//            System.out.println("viewport longitude is ==> " + place.getGeometry().getViewport().getNortheast().getLongitude());
+            System.out.println("Location name is ==> " + place.getName());
+            System.out.println("Address is ==> " + place.getAddress());
+            System.out.println("Location latitude is ==> " + place.getGeometry().getLocation().getLatitude());
+            System.out.println("Location longitude is ==> " + place.getGeometry().getLocation().getLongitude());
+            System.out.println("viewport latitude is ==> " + place.getGeometry().getViewport().getNortheast().getLatitude());
+            System.out.println("viewport longitude is ==> " + place.getGeometry().getViewport().getNortheast().getLongitude());
 
             updateMap(place);
         }
