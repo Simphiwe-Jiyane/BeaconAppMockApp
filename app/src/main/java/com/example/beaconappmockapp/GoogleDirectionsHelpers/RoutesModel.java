@@ -5,7 +5,7 @@ import com.google.android.gms.maps.model.Polyline;
 
 import java.util.List;
 
-public class RoutesHelper {
+public class RoutesModel {
 
     private  RouteBounds bounds; //Container (NE, SW) lat and Long
     private List<RouteLeg> routeLegs;

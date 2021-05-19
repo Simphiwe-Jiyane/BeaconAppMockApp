@@ -19,10 +19,11 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.example.beaconappmockapp.GooglePlacesHelpers.Places.GooglePlaceHelper;
-import com.example.beaconappmockapp.GooglePlacesHelpers.Places.PlacesLocation;
+import com.example.beaconappmockapp.GooglePlacesHelpers.Places.PlaceModel;
+import com.example.beaconappmockapp.NetworkHelpers.DirectionsHelper;
 import com.example.beaconappmockapp.NetworkHelpers.PlacesHelper;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -45,7 +46,6 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -89,6 +89,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //Navigation bar buttons
     ImageView btnDirections;
 
+    //Relative layout container for starting guidance
+    RelativeLayout startGuidanceView;
+
+    //Relative layout container for menu bar
+    RelativeLayout menuBar;
+
+//#region
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,6 +137,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //Init navigation bar buttons
         btnDirections = findViewById(R.id.imgLocationIcon);
 
+        //Init start nav relative layout
+        startGuidanceView = findViewById(R.id.startGuidanceView);
+
+        //Init menu bar
+        menuBar = findViewById(R.id.menu_bar_bottom);
 
 
         //TODO: Set up this button properly
@@ -137,7 +149,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
 
+            }
+        });
 
+        startGuidanceView.setVisibility(View.INVISIBLE);
+        //Set on clikc listener to start guidance
+        startGuidanceView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                //DO SOMETHING
+                //##############
             }
         });
     }
@@ -240,7 +263,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 });
             }
-        } catch (SecurityException e)  {
+        } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage(), e);
         }
     }
@@ -295,10 +318,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             // Get the likely places - that is, the businesses and other points of interest that
             // are the best match for the device's current location.
-            @SuppressWarnings("MissingPermission") final
-            Task<FindCurrentPlaceResponse> placeResult =
+            @SuppressWarnings("MissingPermission") final Task<FindCurrentPlaceResponse> placeResult =
                     placesClient.findCurrentPlace(request);
-            placeResult.addOnCompleteListener (new OnCompleteListener<FindCurrentPlaceResponse>() {
+            placeResult.addOnCompleteListener(new OnCompleteListener<FindCurrentPlaceResponse>() {
                 @Override
                 public void onComplete(@NonNull Task<FindCurrentPlaceResponse> task) {
                     if (task.isSuccessful() && task.getResult() != null) {
@@ -335,8 +357,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         // Show a dialog offering the user the list of likely places, and add a
                         // marker at the selected place.
                         MapsActivity.this.openPlacesDialog();
-                    }
-                    else {
+                    } else {
                         Log.e(TAG, "Exception: %s", task.getException());
                     }
                 }
@@ -402,16 +423,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 lastKnownLocation = null;
                 getLocationPermission();
             }
-        } catch (SecurityException e)  {
+        } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
     }
 
+    //#endregion
     //Helper methods
 
-    private void updateMap(GooglePlaceHelper helper){
+    private void updateMap(PlaceModel helper) {
 
-        LatLng location = new LatLng(helper.getGeometry().getLocation().getLatitude(),helper.getGeometry().getLocation().getLongitude());
+
+        LatLng location = new LatLng(helper.getGeometry().getLocation().getLatitude(), helper.getGeometry().getLocation().getLongitude());
 
         mMap.addMarker(new MarkerOptions()
                 .position(location)
@@ -419,8 +442,56 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .draggable(true));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, DEFAULT_ZOOM));
 
+        startGuidanceView.setVisibility(View.VISIBLE);
+        menuBar.setVisibility(View.GONE);
+
+       getDirections(location);
+
+
     }
 
+    private void getDirections(LatLng dest){
+
+        DirectionsHelper helper = new DirectionsHelper();
+        helper.GetDirections(new LatLng(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude()), dest);
+
+
+
+    }
+//
+//    private void getUpdatedLocation() {
+//        LocationRequest mLocationRequestHighAccuracy = new LocationRequest();
+//        mLocationRequestHighAccuracy.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//        mLocationRequestHighAccuracy.setInterval(4000);
+//        mLocationRequestHighAccuracy.setFastestInterval(2000);
+//        DirectionsHelper helper = new DirectionsHelper();
+//
+//
+//        LatLng origin = null;
+//        LatLng dest = null;
+//
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            getLocationPermission();
+//            return;
+//        }
+//        fusedLocationProviderClient.requestLocationUpdates(mLocationRequestHighAccuracy, new LocationCallback() {
+//
+//            @Override
+//            public void onLocationResult(LocationResult locationResult) {
+//
+//                Location location = locationResult.getLastLocation();
+//                if(location != null){
+//                    origin = new LatLng(location.getLatitude(),location.getLongitude());
+//                }
+//            }
+//        }, Looper.myLooper());
+//
+//
+//
+//
+//        helper.GetDirections(origin, dest);
+//
+//    }
 
     //On editor action listener method
      private TextView.OnEditorActionListener editorListener = new TextView.OnEditorActionListener() {
@@ -441,15 +512,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //TODO: Handle multiple possible locations before updating the map
         //TODO: Create exception handling here
         PlacesHelper helper = new PlacesHelper();
-        List<GooglePlaceHelper> list = helper.getPlace(searchText);
+        List<PlaceModel> list = helper.getPlace(searchText);
 
-        for (GooglePlaceHelper place : list) {
-            System.out.println("Location name is ==> " + place.getName());
-            System.out.println("Address is ==> " + place.getAddress());
-            System.out.println("Location latitude is ==> " + place.getGeometry().getLocation().getLatitude());
-            System.out.println("Location longitude is ==> " + place.getGeometry().getLocation().getLongitude());
-            System.out.println("viewport latitude is ==> " + place.getGeometry().getViewport().getNortheast().getLatitude());
-            System.out.println("viewport longitude is ==> " + place.getGeometry().getViewport().getNortheast().getLongitude());
+        for (PlaceModel place : list) {
+//            System.out.println("Location name is ==> " + place.getName());
+//            System.out.println("Address is ==> " + place.getAddress());
+//            System.out.println("Location latitude is ==> " + place.getGeometry().getLocation().getLatitude());
+//            System.out.println("Location longitude is ==> " + place.getGeometry().getLocation().getLongitude());
+//            System.out.println("viewport latitude is ==> " + place.getGeometry().getViewport().getNortheast().getLatitude());
+//            System.out.println("viewport longitude is ==> " + place.getGeometry().getViewport().getNortheast().getLongitude());
 
             updateMap(place);
         }

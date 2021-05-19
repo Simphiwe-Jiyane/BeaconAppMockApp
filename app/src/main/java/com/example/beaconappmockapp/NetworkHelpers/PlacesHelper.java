@@ -1,12 +1,9 @@
 package com.example.beaconappmockapp.NetworkHelpers;
 
-import android.content.res.Resources;
-
-import com.example.beaconappmockapp.GooglePlacesHelpers.Places.GooglePlaceHelper;
+import com.example.beaconappmockapp.GooglePlacesHelpers.Places.PlaceModel;
 import com.example.beaconappmockapp.GooglePlacesHelpers.Places.PlaceGeometry;
 import com.example.beaconappmockapp.GooglePlacesHelpers.Places.PlaceViewport;
 import com.example.beaconappmockapp.GooglePlacesHelpers.Places.PlacesLocation;
-import com.example.beaconappmockapp.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,13 +43,13 @@ public class PlacesHelper {
 
 
     //Get a list of all the possible locations from the search
-    public List<GooglePlaceHelper> getPlace(String search){
+    public List<PlaceModel> getPlace(String search){
 
         String response = GetPlacesResponse(createUrl(search));
 
-        List<GooglePlaceHelper> list = new ArrayList<GooglePlaceHelper>();
+        List<PlaceModel> list = new ArrayList<PlaceModel>();
 
-        GooglePlaceHelper helper = new GooglePlaceHelper();
+        PlaceModel helper = new PlaceModel();
 
         //Set the name and address of the Places object
         try {

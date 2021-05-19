@@ -1,6 +1,6 @@
 package com.example.beaconappmockapp.GooglePlacesHelpers.Places;
 
-public class GooglePlaceHelper {
+public class PlaceModel {
 
     //TODO: Get the rating as well
 

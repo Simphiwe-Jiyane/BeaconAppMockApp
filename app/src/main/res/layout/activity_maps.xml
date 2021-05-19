@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
-
+<!--TODO: BREAKDOWN LAYOUT INTO DIFFERENT FILES-->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -30,6 +30,28 @@
             />
     </RelativeLayout>
 
+<!-- Relative layout for invisible start guidance button-->
+    <RelativeLayout
+        android:id="@+id/startGuidanceView"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:elevation="1dp"
+        android:layout_marginTop="550dp"
+        android:layout_marginLeft="230dp"
+        android:background="#fff"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Start Guidance"
+            android:textColor="#000"
+            android:textSize="20dp"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"/>
+    </RelativeLayout>
+
+
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
@@ -41,9 +63,13 @@
         tools:context=".MapsActivity" />
 
     <RelativeLayout
+
+        android:id="@+id/menu_bar_bottom"
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        android:background="@color/quantum_grey"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/menu_bar"
         android:layout_alignParentBottom="true"
         >
 <!--TODO: other nav items-->
