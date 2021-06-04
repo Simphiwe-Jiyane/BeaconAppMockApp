@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -37,9 +36,6 @@ public class LoginFrag extends Fragment {
 
     View view;
 
-    //Progressbar variable
-    private ProgressBar spinner;
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
@@ -54,15 +50,10 @@ public class LoginFrag extends Fragment {
 
         btnLogin = view.findViewById(R.id.btnLogin);
 
-        //Initialize ProgressBar
-        spinner = (ProgressBar)view.findViewById(R.id.progressBar1);
-
         //Set button on click listener
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Spinner Visible
-                spinner.setVisibility(View.VISIBLE);
 
                 System.out.println("Clicked ==> Is at 59");
                 //TODO: Validate inputs
@@ -99,8 +90,6 @@ public class LoginFrag extends Fragment {
                                 }
                             }
                         });
-                //Spinner Invisible
-                spinner.setVisibility(View.GONE);
 
             }
         });
