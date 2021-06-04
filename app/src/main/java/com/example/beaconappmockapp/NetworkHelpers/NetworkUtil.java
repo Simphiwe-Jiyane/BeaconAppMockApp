@@ -25,7 +25,7 @@ public class NetworkUtil extends AsyncTask<Request,String,String>{
 
         getRequest();
         try {
-            Thread.sleep(7000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

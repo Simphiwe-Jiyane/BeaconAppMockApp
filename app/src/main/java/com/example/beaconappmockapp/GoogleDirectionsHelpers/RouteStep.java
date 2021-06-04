@@ -3,13 +3,16 @@ package com.example.beaconappmockapp.GoogleDirectionsHelpers;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 
+import java.util.List;
+
 public class RouteStep {
 
 
     private double distance;
+    private double duration;
     private LatLng startLocation;
     private LatLng endLocation;
-    private Polyline stepPolyline;
+    private List<LatLng> stepPolyline;
 
     private String travelMode;
 
@@ -23,6 +26,14 @@ public class RouteStep {
 
     public void setDistance(double distance) {
         this.distance = distance;
+    }
+
+    public double getDuration() {
+        return duration;
+    }
+
+    public void setDuration(double duration) {
+        this.duration = duration;
     }
 
     public LatLng getStartLocation() {
@@ -41,11 +52,11 @@ public class RouteStep {
         this.endLocation = endLocation;
     }
 
-    public Polyline getStepPolyline() {
+    public List<LatLng> getStepPolyline() {
         return stepPolyline;
     }
 
-    public void setStepPolyline(Polyline stepPolyline) {
+    public void setStepPolyline(List<LatLng> stepPolyline) {
         this.stepPolyline = stepPolyline;
     }
 

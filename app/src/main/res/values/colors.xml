@@ -10,4 +10,13 @@
     <color name="app_primary">#ff914d</color>
     <color name="app_secondary">#ffbd59</color>
     <color name="mtrl_textinput_default_box_stroke_color">#ff914d</color>
+    <color name="color_background">
+        <gradient
+            startColor="#ff9a6922"
+            centerColor="#ff9a4025"
+            endColor="#ff9a0e32"
+            angle="45">
+
+        </gradient>
+    </color>
 </resources>

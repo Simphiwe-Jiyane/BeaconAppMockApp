@@ -11,6 +11,7 @@ public class RouteLeg {
     private String strDistance;
     private double duration;
     private LatLng startLocation;
+    private LatLng endLocation;
     private String startAddress;
     private String endAddress;
     private String trafficSpeedEntry; //TODO: Include speed limit parameter in url construct
@@ -49,6 +50,14 @@ public class RouteLeg {
 
     public void setStartLocation(LatLng startLocation) {
         this.startLocation = startLocation;
+    }
+
+    public LatLng getEndLocation() {
+        return endLocation;
+    }
+
+    public void setEndLocation(LatLng endLocation) {
+        this.endLocation = endLocation;
     }
 
     public String getStartAddress() {

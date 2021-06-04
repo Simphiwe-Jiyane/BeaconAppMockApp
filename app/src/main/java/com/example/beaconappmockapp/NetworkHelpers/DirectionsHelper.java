@@ -8,6 +8,7 @@ import com.example.beaconappmockapp.GoogleDirectionsHelpers.RouteLeg;
 import com.example.beaconappmockapp.GoogleDirectionsHelpers.RouteStep;
 import com.example.beaconappmockapp.GoogleDirectionsHelpers.RoutesModel;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,13 +51,14 @@ public class DirectionsHelper {
             JSONObject root = new JSONObject(response);
 
             //Set the route legs
-            route.setRouteLegs(getRouteLegs(root));
-            return route;
+            route.setRouteLegs(getRouteLegs(root.getJSONArray("routes")));
+
 
         } catch (JSONException e) {
             e.printStackTrace();
-            return null;
+
         }
+        return route;
     }
 
     //Extract the route bounds from the json string
@@ -81,45 +83,52 @@ public class DirectionsHelper {
     }
 
     //Extract the route legs from the json string
-    private List<RouteLeg> getRouteLegs(JSONObject root){
+    private List<RouteLeg> getRouteLegs(JSONArray root){
 
         List<RouteLeg> routeLegs = new ArrayList<RouteLeg>();
 
         try {
-            JSONArray legsArray = root.getJSONArray("legs");
+            for(int x = 0; x < root.length(); x++){
 
-            for(int i = 0; i < legsArray.length(); i++){
-                RouteLeg leg = new RouteLeg();
-                JSONObject jsonObject = legsArray.getJSONObject(i);
-                //Get Distance
-                leg.setDistance(jsonObject.getJSONObject("distance").getDouble("value"));
+                JSONObject routeObject = root.getJSONObject(x);
+                JSONArray legsArray = routeObject.getJSONArray("legs");
+                for(int i = 0; i < legsArray.length(); i++){
+                    RouteLeg leg = new RouteLeg();
+                    JSONObject jsonObject = legsArray.getJSONObject(i);
+                    //Get Distance
+                    leg.setDistance(jsonObject.getJSONObject("distance").getDouble("value"));
 
-                //Get duration
-                leg.setDuration(jsonObject.getJSONObject("duration").getDouble("value"));
+                    //Get duration
+                    leg.setDuration(jsonObject.getJSONObject("duration").getDouble("value"));
 
-                //Get end location
-                leg.setEndAddress(jsonObject.getString("end_address"));
+                    //Get end location
+                    leg.setEndAddress(jsonObject.getString("end_address"));
 
-                //Get start address
-                leg.setStartAddress(jsonObject.getString("start_location"));
+                    //Get start address
+                    leg.setStartAddress(jsonObject.getString("start_location"));
 
-                //Get end location
-                //TODO: UPDATE HELPER METHOD TO ACCEPT END LOCATION COORDINATES
+                    //Get start location
+                    leg.setStartLocation(new LatLng(jsonObject.getJSONObject("start_location").getDouble("lat")
+                            ,jsonObject.getJSONObject("start_location").getDouble("lng")));
 
-                //Get start location
-                //TODO: UPDATE HELPER METHOD TO ACCEPT START LOCATION COORDINATES
+                    //Get end location
+                    leg.setEndLocation(new LatLng(jsonObject.getJSONObject("end_location").getDouble("lat")
+                            ,jsonObject.getJSONObject("end_location").getDouble("lng")));
 
-                //Get the route steps
-                leg.setSteps(getSteps(jsonObject.getJSONArray("steps")));
+                    //Get the route steps
+                    leg.setSteps(getSteps(jsonObject.getJSONArray("steps")));
 
-                //Get traffic speed info
+                    //Get traffic speed info
 
 
-                //Get via waypoint data
+                    //Get via waypoint data
 
-                routeLegs.add(leg);
+                    //Get summary
+
+                    routeLegs.add(leg);
+                }
+
             }
-
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -133,7 +142,47 @@ public class DirectionsHelper {
 
         List<RouteStep> routeSteps = new ArrayList<RouteStep>();
 
-        //TODO: EXTRACT THE STEPS
+        for(int i = 0; i < jsonArray.length(); i++){
+
+            RouteStep step = new RouteStep();
+
+            try {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                //Get the distance
+                step.setDistance(jsonObject.getJSONObject("distance").getDouble("value"));
+
+                //Get the duration
+                step.setDuration(jsonObject.getJSONObject("duration").getDouble("value"));
+
+                //Get the end location
+                step.setEndLocation(new LatLng(jsonObject.getJSONObject("end_location").getDouble("lat")
+                        ,jsonObject.getJSONObject("end_location").getDouble("lng")));
+
+
+                //Get the start location
+                step.setStartLocation(new LatLng(jsonObject.getJSONObject("start_location").getDouble("lat")
+                        ,jsonObject.getJSONObject("end_location").getDouble("lng")));
+
+                //Get the polyline value
+                //Extract value from json string response then convert to latlng value
+                List<LatLng> stepPolylines = PolyUtil.decode((jsonObject.getJSONObject("polyline").getString("points")));
+
+                step.setStepPolyline(stepPolylines);
+
+                //Get the maneuver
+//                step.setManeuver(jsonObject.getString("maneuver"));
+
+                //Get the travel mode
+//                step.setTravelMode(jsonObject.getString("travel_mode"));
+
+                //Add the step to the List<>
+                routeSteps.add(step);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
 
         return routeSteps;
     }

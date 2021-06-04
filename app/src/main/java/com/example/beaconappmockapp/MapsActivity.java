@@ -7,8 +7,11 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -22,9 +25,13 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.beaconappmockapp.GoogleDirectionsHelpers.RouteLeg;
+import com.example.beaconappmockapp.GoogleDirectionsHelpers.RouteStep;
+import com.example.beaconappmockapp.GoogleDirectionsHelpers.RoutesModel;
 import com.example.beaconappmockapp.GooglePlacesHelpers.Places.PlaceModel;
 import com.example.beaconappmockapp.NetworkHelpers.DirectionsHelper;
 import com.example.beaconappmockapp.NetworkHelpers.PlacesHelper;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,6 +42,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
@@ -43,16 +52,22 @@ import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import okhttp3.Route;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private static final String TAG = MapsActivity.class.getSimpleName();
     private GoogleMap mMap;
     private CameraPosition cameraPosition;
-
+    private static int AUTOCOMPLETE_REQUEST_CODE = 1;
     // The entry point to the com.example.beaconappmockapp.GooglePlacesHelpers.Places API.
     private PlacesClient placesClient;
 
@@ -89,32 +104,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //Navigation bar buttons
     ImageView btnDirections;
 
-    //Relative layout container for starting guidance
-    RelativeLayout startGuidanceView;
+    //TextViews
+    TextView txtNavStartMenuDestination;
 
-    //Relative layout container for menu bar
-    RelativeLayout menuBar;
+    //Relative layout container for menu bar, start guidance button, navigation start menu
+    RelativeLayout menuBar, startGuidanceView, navigation_start_menu;
+
+
 
 //#region
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // [START_EXCLUDE silent]
-        // [START maps_current_place_on_create_save_instance_state]
-        // Retrieve location and camera position from saved instance state.
         if (savedInstanceState != null) {
             lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
             cameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
         }
-        // [END maps_current_place_on_create_save_instance_state]
-        // [END_EXCLUDE]
-
         // Retrieve the content view that renders the map.
         setContentView(R.layout.activity_maps);
-
-        // [START_EXCLUDE silent]
-        // Construct a PlacesClient
         Places.initialize(getApplicationContext(), getString(R.string.google_maps_key));
         placesClient = Places.createClient(this);
 
@@ -122,13 +130,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Build the map.
-        // [START maps_current_place_map_fragment]
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        // [END maps_current_place_map_fragment]
-        // [END_EXCLUDE]
-
         //Init search bar
         etxtSearch = findViewById(R.id.etxtSearch);
 
@@ -143,26 +147,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //Init menu bar
         menuBar = findViewById(R.id.menu_bar_bottom);
 
+        //Init start navigation relative layout
+        navigation_start_menu = findViewById(R.id.navigation_menu);
+
+        //Init text view to display destination
+        txtNavStartMenuDestination = findViewById(R.id.txt_nav_destination);
+
+        //Set the start turn by turn navigation visibility to false
+        startGuidanceView.setVisibility(View.INVISIBLE);
+
+        //Set the start navigation menu visibility to false
+        navigation_start_menu.setVisibility(View.INVISIBLE);
 
         //TODO: Set up this button properly
         btnDirections.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                geoLocate();
             }
         });
 
-        startGuidanceView.setVisibility(View.INVISIBLE);
-        //Set on clikc listener to start guidance
-        startGuidanceView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-
-                //DO SOMETHING
-                //##############
-            }
-        });
     }
 
 
@@ -192,11 +197,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap map) {
         this.mMap = map;
-
-        // [START_EXCLUDE]
-        // [START map_current_place_set_info_window_adapter]
-        // Use a custom info window adapter to handle multiple lines of text in the
-        // info window contents.
         this.mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
             @Override
@@ -353,7 +353,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 break;
                             }
                         }
-
                         // Show a dialog offering the user the list of likely places, and add a
                         // marker at the selected place.
                         MapsActivity.this.openPlacesDialog();
@@ -427,15 +426,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.e("Exception: %s", e.getMessage());
         }
     }
-
     //#endregion
-    //Helper methods
 
+    //Helper methods
     private void updateMap(PlaceModel helper) {
 
+        final LatLng location = new LatLng(helper.getGeometry().getLocation().getLatitude(), helper.getGeometry().getLocation().getLongitude());
 
-        LatLng location = new LatLng(helper.getGeometry().getLocation().getLatitude(), helper.getGeometry().getLocation().getLongitude());
-
+        RoutesModel route = getDirections(location);
+        List<LatLng> polylinePoints = getPolylines(route.getRouteLegs());
+        Polyline polyline1 = mMap.addPolyline(new PolylineOptions()
+                .addAll(polylinePoints)
+                .width(25)
+                .color(Color.BLUE)
+                .geodesic(true));
         mMap.addMarker(new MarkerOptions()
                 .position(location)
                 .title(helper.getName())
@@ -443,55 +447,81 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, DEFAULT_ZOOM));
 
         startGuidanceView.setVisibility(View.VISIBLE);
-        menuBar.setVisibility(View.GONE);
+        menuBar.setVisibility(View.INVISIBLE);
+        navigation_start_menu.setVisibility(View.VISIBLE);
+        txtNavStartMenuDestination.setText("To: "+helper.getName());
 
-       getDirections(location);
+        for (RouteLeg leg: route.getRouteLegs()) {
+            System.out.println("Start location is: "+leg.getStartLocation());
+        }
 
+        final RoutesModel LOCATION_ROUTE;
 
+        //Set on click listener to start guidance
+        startGuidanceView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //Start turn by turn navigation
+                launchTurnByTurnNavigation(location);
+
+            }
+        });
     }
 
-    private void getDirections(LatLng dest){
+    //Method that starts the turn by turn navigation on the Google maps activity
+    private void launchTurnByTurnNavigation(LatLng dest){
+
+        //Set the end destination
+        Intent intent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("google.navigation:q="+dest.latitude+","+dest.longitude));
+        intent.setPackage("com.google.android.apps.maps");
+
+        if(intent.resolveActivity(getPackageManager()) != null){
+            startActivity(intent);
+            Log.d(TAG,"Navigation started");
+        }
+        else{
+            Log.d(TAG,"Navigation could not start");
+        }
+    }
+
+
+
+    //Method that extracts the polyline values from the route model
+    private List<LatLng> getPolylines(List<RouteLeg> legs){
+
+        List<RouteStep> steps = new ArrayList<RouteStep>();
+
+        // Extract each route step
+        for(RouteLeg leg: legs){
+            for(RouteStep step: leg.getSteps()){
+                steps.add(step);
+            }
+        }
+
+        //List of coordinates for each step
+        List<LatLng> stepCoordinates = new ArrayList<LatLng>();
+
+        //Get the coordinates of each step
+        for(RouteStep step: steps){
+            //Cycle through the polyline points in each step
+            for(LatLng point: step.getStepPolyline()){
+                //Add each coordinate to the list of coordinates
+                stepCoordinates.add(point);
+            }
+        }
+
+        return stepCoordinates;
+    }
+
+    private RoutesModel getDirections(LatLng dest){
 
         DirectionsHelper helper = new DirectionsHelper();
-        helper.GetDirections(new LatLng(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude()), dest);
 
-
-
+        return helper.GetDirections(new LatLng(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude()), dest);
     }
-//
-//    private void getUpdatedLocation() {
-//        LocationRequest mLocationRequestHighAccuracy = new LocationRequest();
-//        mLocationRequestHighAccuracy.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-//        mLocationRequestHighAccuracy.setInterval(4000);
-//        mLocationRequestHighAccuracy.setFastestInterval(2000);
-//        DirectionsHelper helper = new DirectionsHelper();
-//
-//
-//        LatLng origin = null;
-//        LatLng dest = null;
-//
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            getLocationPermission();
-//            return;
-//        }
-//        fusedLocationProviderClient.requestLocationUpdates(mLocationRequestHighAccuracy, new LocationCallback() {
-//
-//            @Override
-//            public void onLocationResult(LocationResult locationResult) {
-//
-//                Location location = locationResult.getLastLocation();
-//                if(location != null){
-//                    origin = new LatLng(location.getLatitude(),location.getLongitude());
-//                }
-//            }
-//        }, Looper.myLooper());
-//
-//
-//
-//
-//        helper.GetDirections(origin, dest);
-//
-//    }
+
 
     //On editor action listener method
      private TextView.OnEditorActionListener editorListener = new TextView.OnEditorActionListener() {
@@ -509,21 +539,53 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void geoLocate() {
         String searchText = etxtSearch.getText().toString();
 
-        //TODO: Handle multiple possible locations before updating the map
-        //TODO: Create exception handling here
-        PlacesHelper helper = new PlacesHelper();
-        List<PlaceModel> list = helper.getPlace(searchText);
+//        //TODO: Handle multiple possible locations before updating the map
+//        //TODO: Create exception handling here
+//        PlacesHelper helper = new PlacesHelper();
+//        List<PlaceModel> list = helper.getPlace(searchText);
+//
+//        for (PlaceModel place : list) {
+//            updateMap(place);
+//        }
 
-        for (PlaceModel place : list) {
-//            System.out.println("Location name is ==> " + place.getName());
-//            System.out.println("Address is ==> " + place.getAddress());
-//            System.out.println("Location latitude is ==> " + place.getGeometry().getLocation().getLatitude());
-//            System.out.println("Location longitude is ==> " + place.getGeometry().getLocation().getLongitude());
-//            System.out.println("viewport latitude is ==> " + place.getGeometry().getViewport().getNortheast().getLatitude());
-//            System.out.println("viewport longitude is ==> " + place.getGeometry().getViewport().getNortheast().getLongitude());
+         int AUTOCOMPLETE_REQUEST_CODE = 1;
 
-            updateMap(place);
-        }
+        // Set the fields to specify which types of place data to
+        // return after the user has made a selection.
+        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+
+        // Start the autocomplete intent.
+        //TODO: Add region filter after completion of project
+        Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
+                .build(this);
+        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+
 
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,Intent data) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                PlacesHelper helper = new PlacesHelper();
+                List<PlaceModel> list = helper.getPlace(place.getName());
+
+                for (PlaceModel model : list) {
+                    Log.i(TAG, "MODEL:"+model.getName());
+                    updateMap(model);
+                }
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i(TAG, status.getStatusMessage());
+                System.out.println("Place not returned");
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
 }
