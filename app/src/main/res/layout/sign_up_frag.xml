@@ -143,14 +143,6 @@
             app:backgroundTint="@color/app_primary"
             android:text="Sign Up"
             />
-        <ProgressBar
-            android:id="@+id/progressBar1"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:indeterminateDrawable="@drawable/rotate"/>
-
     </LinearLayout>
 
 
